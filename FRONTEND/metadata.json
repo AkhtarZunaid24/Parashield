@@ -1,0 +1,5 @@
+{
+  "name": "RiderGuard Insurance",
+  "description": "Specialized insurance for delivery riders with real-time risk monitoring and profile management.",
+  "requestFramePermissions": ["geolocation"]
+}
