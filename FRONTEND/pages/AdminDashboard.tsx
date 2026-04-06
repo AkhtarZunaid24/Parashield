@@ -43,6 +43,7 @@ import {
   ComposedChart,
   Legend
 } from 'recharts';
+import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet';
 
 // Mock Data
 const POLICY_DATA = [
@@ -146,8 +147,8 @@ const AdminDashboard: React.FC = () => {
     const severities = ['High', 'Medium', 'Low'];
     const initialPins = Array.from({ length: 25 }).map((_, i) => ({
       id: i,
-      x: Math.random() * 80 + 10,
-      y: Math.random() * 80 + 10,
+      lat: 20.2961 + (Math.random() * 0.1 - 0.05),
+      lng: 85.8245 + (Math.random() * 0.1 - 0.05),
       type: types[Math.floor(Math.random() * types.length)],
       severity: severities[Math.floor(Math.random() * severities.length)],
     }));
@@ -160,8 +161,8 @@ const AdminDashboard: React.FC = () => {
           const idx = Math.floor(Math.random() * newPins.length);
           newPins[idx] = {
             ...newPins[idx],
-            x: Math.max(5, Math.min(95, newPins[idx].x + (Math.random() * 4 - 2))),
-            y: Math.max(5, Math.min(95, newPins[idx].y + (Math.random() * 4 - 2))),
+            lat: newPins[idx].lat + (Math.random() * 0.004 - 0.002),
+            lng: newPins[idx].lng + (Math.random() * 0.004 - 0.002),
           };
         }
         return newPins;
@@ -231,7 +232,7 @@ const AdminDashboard: React.FC = () => {
       <aside className={`w-64 border-r flex flex-col ${isDarkMode ? 'border-zinc-800 bg-zinc-950' : 'border-zinc-200 bg-white'}`}>
         <div className="p-6 flex items-center gap-3">
           <ShieldCheck className="w-8 h-8 text-yellow-500" />
-          <span className="font-black text-xl tracking-tighter uppercase">GIGGUARD</span> {/* Updated to GigGuard! */}
+          <span className="font-black text-xl tracking-tighter uppercase">PARASHIELD</span> {/* Updated to GigGuard! */}
         </div>
 
         <nav className="flex-1 px-4 space-y-2 mt-4">
@@ -511,29 +512,43 @@ const AdminDashboard: React.FC = () => {
                     </select>
                   </div>
                 </div>
-                <div className="h-[400px] w-full bg-zinc-100 dark:bg-zinc-900 rounded-2xl relative overflow-hidden">
-                  {/* Decorative Map Elements */}
-                  <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:20px_20px]" />
-                  <div className="absolute top-1/4 left-1/3 w-32 h-32 bg-emerald-500/20 rounded-full blur-3xl" />
-                  <div className="absolute bottom-1/3 right-1/4 w-48 h-48 bg-red-500/20 rounded-full blur-3xl" />
-                  
-                  {/* Real-time Simulated Pins */}
-                  {filteredPins.map((pin) => (
-                    <div 
-                      key={pin.id}
-                      className={`absolute w-3 h-3 rounded-full transition-all duration-1000 ${
-                        pin.severity === 'High' ? 'bg-red-500 shadow-[0_0_12px_rgba(239,68,68,0.8)]' : 
-                        pin.severity === 'Medium' ? 'bg-yellow-500 shadow-[0_0_10px_rgba(234,179,8,0.6)]' : 
-                        'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]'
-                      }`}
-                      style={{ 
-                        top: `${pin.y}%`, 
-                        left: `${pin.x}%` 
-                      }}
+                <div className="h-[400px] w-full bg-zinc-100 dark:bg-zinc-900 rounded-2xl relative overflow-hidden z-0">
+                  <MapContainer 
+                    center={[20.2961, 85.8245]} 
+                    zoom={12} 
+                    style={{ height: '100%', width: '100%' }}
+                    className="z-0"
+                  >
+                    <TileLayer
+                      url={isDarkMode 
+                        ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+                        : "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+                      }
+                      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
                     />
-                  ))}
+                    {filteredPins.map((pin) => (
+                      <CircleMarker
+                        key={pin.id}
+                        center={[pin.lat, pin.lng]}
+                        radius={8}
+                        pathOptions={{
+                          color: pin.severity === 'High' ? '#ef4444' : pin.severity === 'Medium' ? '#eab308' : '#10b981',
+                          fillColor: pin.severity === 'High' ? '#ef4444' : pin.severity === 'Medium' ? '#eab308' : '#10b981',
+                          fillOpacity: 0.7,
+                          weight: 2
+                        }}
+                      >
+                        <Popup>
+                          <div className="p-1">
+                            <p className="font-bold text-sm mb-1">{pin.type} Risk</p>
+                            <p className="text-xs text-zinc-500">Severity: {pin.severity}</p>
+                          </div>
+                        </Popup>
+                      </CircleMarker>
+                    ))}
+                  </MapContainer>
 
-                  <div className="absolute bottom-6 left-6 p-4 bg-black/80 backdrop-blur-md text-white rounded-2xl border border-white/10">
+                  <div className="absolute bottom-6 left-6 p-4 bg-black/80 backdrop-blur-md text-white rounded-2xl border border-white/10 z-[1000] pointer-events-none">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-yellow-500 rounded-xl flex items-center justify-center text-black font-black">
                         {filteredPins.length}
@@ -1029,7 +1044,3 @@ const AdminDashboard: React.FC = () => {
 };
 
 export default AdminDashboard;
- 
-
-
-

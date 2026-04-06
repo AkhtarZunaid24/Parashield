@@ -74,7 +74,7 @@ const Signup: React.FC = () => {
     <div className="min-h-screen bg-[#F4F4F5] flex flex-col items-center justify-center p-4 py-12">
       <Link to="/" className="flex items-center gap-2 mb-12 hover:opacity-80 transition-opacity" aria-label="RiderGuard Home">
         <Shield className="w-10 h-10 text-yellow-500" aria-hidden="true" />
-        <span className="text-3xl font-display font-bold text-black">RIDERGUARD</span>
+        <span className="text-3xl font-display font-bold text-black">PARASHIELD</span>
       </Link>
 
       <div className="w-full max-w-md bg-white p-8 md:p-10 rounded-3xl border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">

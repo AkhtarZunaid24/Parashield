@@ -19,7 +19,6 @@ const Hero: React.FC = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Zones mapped with Bhubaneswar coordinates for the Backend
   const zones = [
     { id: 'patia', name: 'Patia', lat: 20.353, lon: 85.826 },
     { id: 'khandagiri', name: 'Khandagiri', lat: 20.267, lon: 85.783 },
@@ -57,6 +56,7 @@ const Hero: React.FC = () => {
       });
 
       const data = await response.json();
+      // data.daily_premium comes from your backend logic
       setPremium(data.daily_premium);
     } catch (error) {
       console.error("Failed to fetch premium:", error);
@@ -64,6 +64,9 @@ const Hero: React.FC = () => {
       setLoading(false);
     }
   };
+
+  // 1. Dynamic Payout Calculation (85% of Premium)
+  const maxPayout = premium ? Math.round(premium * 0.85) : null;
 
   return (
     <section className="relative min-h-[90vh] flex items-center justify-center pt-20 overflow-hidden">
@@ -79,21 +82,19 @@ const Hero: React.FC = () => {
       </div>
 
       <div className="relative z-10 max-w-4xl mx-auto px-4 text-center">
-        <h1 className="text-5xl md:text-7xl lg:text-8xl font-display text-white leading-none mb-6 animate-in fade-in slide-in-from-bottom-8 duration-700">
+        <h1 className="text-5xl md:text-7xl lg:text-8xl font-display text-white leading-none mb-6">
           PROTECTING THE <br />
-          <span className="text-yellow-400">PULSE OF THE CITY</span>
+          <span className="text-yellow-400 font-black">PULSE OF THE CITY</span>
         </h1>
-        <p className="text-xl md:text-2xl text-zinc-200 mb-10 max-w-2xl mx-auto font-medium leading-relaxed">
+        <p className="text-xl md:text-2xl text-zinc-200 mb-10 max-w-2xl mx-auto font-medium">
            Guard against income loss from extreme weather and localized environmental disruptions.
         </p>
 
-        {/* --- Input Container --- */}
-        <div className="flex flex-col md:flex-row items-center justify-center gap-3 w-full max-w-xl mx-auto bg-white/10 backdrop-blur-xl p-3 rounded-3xl md:rounded-full shadow-[0_0_50px_rgba(250,204,21,0.15)] border border-white/20">
-          
+        <div className="flex flex-col md:flex-row items-center justify-center gap-3 w-full max-w-xl mx-auto bg-white/10 backdrop-blur-xl p-3 rounded-3xl md:rounded-full border border-white/20">
           <div className="relative w-full" ref={dropdownRef}>
             {isOpen && (
               <div className="absolute bottom-[105%] left-0 w-full bg-white border border-zinc-100 rounded-2xl shadow-2xl z-[100] max-h-[250px] overflow-y-auto animate-in fade-in slide-in-from-bottom-2 duration-200">
-                <ul className="py-2 flex flex-col w-full text-left">
+                <ul className="py-2 flex flex-col w-full text-left text-black">
                   {zones.map((zone) => (
                     <li key={zone.id} className="w-full">
                       <button
@@ -101,10 +102,10 @@ const Hero: React.FC = () => {
                         onClick={() => {
                           setSelectedZone(zone.id);
                           setIsOpen(false);
-                          setPremium(null); // Reset premium when location changes
+                          setPremium(null); 
                         }}
                         className={`w-full text-left px-6 py-3 transition-colors hover:bg-zinc-50 hover:text-yellow-600 block ${
-                          selectedZone === zone.id ? 'bg-zinc-50 text-yellow-600 font-semibold' : 'text-zinc-600 font-medium'
+                          selectedZone === zone.id ? 'bg-zinc-50 text-yellow-600 font-semibold' : 'text-zinc-600'
                         }`}
                       >
                         {zone.name}
@@ -118,60 +119,58 @@ const Hero: React.FC = () => {
             <button
               type="button"
               onClick={() => setIsOpen(!isOpen)}
-              className="w-full flex items-center justify-between px-6 py-4 text-zinc-900 font-bold focus:outline-none focus:ring-2 focus:ring-yellow-400 rounded-2xl md:rounded-full bg-white hover:bg-zinc-50 transition-all shadow-lg"
+              className="w-full flex items-center justify-between px-6 py-4 text-zinc-900 font-bold focus:outline-none rounded-2xl md:rounded-full bg-white hover:bg-zinc-50 transition-all shadow-lg"
             >
               <span className={selectedZone ? "text-black text-lg" : "text-zinc-500 text-lg"}>
                 {selectedZone ? zones.find(z => z.id === selectedZone)?.name : 'Select delivery zone'}
               </span>
-              <ChevronDown 
-                size={20} 
-                className={`text-zinc-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} 
-              />
+              <ChevronDown size={20} className={`text-zinc-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
             </button>
           </div>
 
           <button 
             onClick={handleCheckRate}
             disabled={loading || !selectedZone}
-            className="w-full md:w-auto bg-[#facc15] text-black px-8 py-4 rounded-xl md:rounded-full font-black text-lg hover:bg-yellow-300 transition-all duration-300 flex items-center justify-center gap-2 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(250,204,21,0.4)] hover:shadow-[0_0_30px_rgba(250,204,21,0.6)] hover:-translate-y-1"
+            className="w-full md:w-auto bg-[#facc15] text-black px-10 py-4 rounded-xl md:rounded-full font-black text-lg hover:bg-yellow-300 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
           >
-            {loading ? <Loader2 className="animate-spin" size={20} /> : 'CHECK YOUR RATE'}
+            {loading ? <Loader2 className="animate-spin" size={20} /> : 'CHECK RATE'}
             {!loading && <ArrowRight size={20} />}
           </button>
         </div>
 
-        {/* --- PREMIUM RESULT REVEAL --- */}
+        {/* --- DYNAMIC RESULT REVEAL --- */}
         {premium && (
           <div className="mt-8 max-w-md mx-auto animate-in zoom-in-95 fade-in duration-500">
-            <div className="bg-gradient-to-br from-yellow-400 to-yellow-500 p-[1px] rounded-3xl">
-              <div className="bg-zinc-900/90 backdrop-blur-2xl rounded-[23px] p-6 text-left border border-white/10">
-                <div className="flex justify-between items-start mb-4">
+            <div className="bg-gradient-to-br from-yellow-400 to-yellow-500 p-[1px] rounded-[30px]">
+              <div className="bg-zinc-900/90 backdrop-blur-2xl rounded-[29px] p-8 text-left border border-white/10">
+                <div className="flex justify-between items-start mb-6">
                   <div>
-                    <p className="text-yellow-400 text-xs font-black uppercase tracking-widest flex items-center gap-2">
-                      <Sparkles size={14} /> AI Calculated Premium
+                    <p className="text-yellow-400 text-[10px] font-black uppercase tracking-widest flex items-center gap-2 mb-1">
+                      <Sparkles size={12} /> AI Calculated Premium
                     </p>
-                    <h3 className="text-white text-2xl font-bold mt-1">Ready to Cover.</h3>
+                    <h3 className="text-white text-2xl font-black italic uppercase">Ready to Cover.</h3>
                   </div>
                   <ShieldCheck className="text-yellow-400" size={32} />
                 </div>
                 
-                <div className="flex items-baseline gap-2 mb-4">
-                  <span className="text-5xl font-black text-white">₹{premium}</span>
-                  <span className="text-zinc-400 font-medium">/ daily shift</span>
+                <div className="flex items-baseline gap-2 mb-6">
+                  <span className="text-6xl font-black text-white tracking-tighter">₹{premium}</span>
+                  <span className="text-zinc-500 text-xs font-bold uppercase tracking-widest">/ Weekly shift</span>
                 </div>
 
-                <div className="bg-white/5 rounded-2xl p-4 border border-white/5 space-y-2">
-                   <div className="flex justify-between text-sm">
-                      <span className="text-zinc-400">Max Payout</span>
-                      <span className="text-white font-bold">₹720</span>
+                <div className="bg-black/40 rounded-2xl p-5 border border-white/5 space-y-4">
+                   <div className="flex justify-between items-center">
+                      <span className="text-zinc-500 text-[10px] font-black uppercase tracking-widest">Max Payout</span>
+                      {/* THIS IS THE DYNAMIC PART */}
+                      <span className="text-white font-black text-lg tracking-tight">₹{maxPayout}</span>
                    </div>
-                   <div className="flex justify-between text-sm">
-                      <span className="text-zinc-400">Risk Assessment</span>
-                      <span className="text-emerald-400 font-bold uppercase text-[10px] tracking-tighter bg-emerald-400/10 px-2 py-1 rounded-full">Live Verified</span>
+                   <div className="flex justify-between items-center">
+                      <span className="text-zinc-500 text-[10px] font-black uppercase tracking-widest">Risk Assessment</span>
+                      <span className="text-emerald-400 font-black uppercase text-[8px] tracking-tighter bg-emerald-400/10 px-2 py-1 rounded-full border border-emerald-400/20">Live Verified</span>
                    </div>
                 </div>
 
-                <button className="w-full mt-4 bg-white text-black py-3 rounded-2xl font-black hover:bg-zinc-200 transition-colors">
+                <button className="w-full mt-6 bg-white text-black py-4 rounded-2xl font-black uppercase tracking-widest hover:bg-zinc-200 transition-all text-sm">
                   ACTIVATE PROTECTION
                 </button>
               </div>
@@ -179,7 +178,7 @@ const Hero: React.FC = () => {
           </div>
         )}
         
-        <p className="mt-6 text-zinc-400 text-sm font-bold uppercase tracking-widest">
+        <p className="mt-8 text-zinc-400 text-[10px] font-black uppercase tracking-[0.4em]">
           Trusted by 50,000+ riders nationwide
         </p>
       </div>

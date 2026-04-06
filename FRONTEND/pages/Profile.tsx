@@ -27,7 +27,7 @@ const Profile: React.FC = () => {
     name: 'Rahul Sharma',
     email: 'rahul.s@delivery.com',
     phone: '+91 98765 43210',
-    primaryZone: 'Nayapalli', // Placeholder based on our previous logic
+    primaryZone: 'Acharya Vihar', // Placeholder based on our previous logic
     vehicle: 'Honda Activa 6G (MH-01-AB-1234)'
   });
 
