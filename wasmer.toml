@@ -5,3 +5,23 @@ description = "FastAPI backend for Parashield"
 
 [dependencies]
 "python/python" = "^3.12"
+[package]
+name = "akhtarzunaid24/parashield"
+version = "0.1.6"
+description = "FastAPI backend for Parashield"
+
+[dependencies]
+"python/python" = "3.12"
+
+[build]
+setup_command = "pip install -r requirements.txt"
+
+[[commands]]
+name = "run"
+module = "python/python:python"
+runner = "wasi"
+args = ["-c", "import sys; sys.path.append('BACKEND'); import uvicorn; uvicorn.run('main:app', host='0.0.0.0', port=8080)"]
+
+[[deploy]]
+name = "parashield"
+public = true
