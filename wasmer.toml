@@ -1,21 +1,7 @@
 [package]
 name = "akhtarzunaid24/parashield"
-version = "0.1.0"
+version = "0.1.1"
 description = "FastAPI backend for Parashield"
 
 [dependencies]
-"python/python" = "3.12"
-
-[[commands]]
-name = "run"
-module = "python/python:python"
-runner = "wasi"
-# We add BACKEND to the PYTHONPATH so it can find your routers/services
-args = ["-c", "import sys; sys.path.append('BACKEND'); import uvicorn; uvicorn.run('main:app', host='0.0.0.0', port=8080)"]
-
-[build]
-setup_command = "pip install -r requirements.txt"
-
-[[deploy]]
-name = "parashield"
-public = true
+"python/python" = "^3.12"
