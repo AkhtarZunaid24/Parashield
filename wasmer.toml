@@ -1,0 +1,18 @@
+[package]
+name = "AkhtarZunaid24/parashield"
+version = "0.1.0"
+description = "FastAPI backend for Parashield"
+
+[[commands]]
+name = "run"
+module = "python"
+runner = "python"
+# Point this to your actual main file
+args = ["BACKEND/main.py"]
+
+[dependencies]
+"python" = "3.11"
+
+[build]
+# This is the line that fixes your 'ModuleNotFoundError'
+setup_command = "pip install -r requirements.txt"
