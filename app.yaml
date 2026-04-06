@@ -1,0 +1,5 @@
+kind: wasmer.io/App.v0
+name: Parashield
+owner: akhtarzunaid24
+package: .
+app_id: da_RLmILtvUyqjq

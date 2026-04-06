@@ -1,5 +1,6 @@
 import time
 import logging
+import os
 from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -30,16 +31,14 @@ app = FastAPI(
     version="1.0.0",
     contact= {
         "name" : "Parashield Engineering Team",
-        "url" : "#github repo here"
+        "url" : "https://github.com/AkhtarZunaid24/Parashield"
     } 
 )
 
 # --- 2. FIXED CORS MIDDLEWARE ---
-# BACKEND/main.py
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # The asterisk means "Allow Everything"
+    allow_origins=["*"], 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -50,9 +49,8 @@ async def add_process_time_header(request : Request, call_next):
     start_time = time.time()
     response = await call_next(request)
     process_time = time.time() - start_time
-    # --- 3. FIXED HEADERS TYPO ---
     response.headers["X-Process-Time-Sec"] = str(round(process_time, 4))
-    logger.info(f" {request.method} , {request.url.path} completed in process time {process_time:.4f}s")
+    logger.info(f" {request.method} , {request.url.path} completed in {process_time:.4f}s")
     return response
 
 @app.exception_handler(Exception)
@@ -79,24 +77,18 @@ async def system_health():
         "timestamp" : time.time()
     }
 
-# --- 4. THE LIVE PARAMETRIC TRIGGER ENDPOINT ---
 @app.get("/api/v1/trigger-status", tags=["Live Parametric Triggers"])
 def get_trigger_status(lat: float = 20.2961, lon: float = 85.8245, rider_id: str = "RIDER_8821"):
-    # Fetch live weather for Bhubaneswar
     weather_data = weather_api.get_real_time_risk_data(lat, lon)
-    
-    response_payload = {
-        "weather_data": weather_data,
-        "payout_data": None
-    }
+    response_payload = {"weather_data": weather_data, "payout_data": None}
 
-    # If the weather hits your threshold, trigger the mock blockchain payout!
     if weather_data.get("is_trigger_met"):
         severity = "LOW"
-        if weather_data.get("rainfall_mm", 0) > 25 or weather_data.get("aqi_score", 0) > 400:
-            severity = "HIGH"
-        elif weather_data.get("rainfall_mm", 0) > 15 or weather_data.get("aqi_score", 0) > 300:
-            severity = "MEDIUM"
+        rainfall = weather_data.get("rainfall_mm", 0)
+        aqi = weather_data.get("aqi_score", 0)
+        
+        if rainfall > 25 or aqi > 400: severity = "HIGH"
+        elif rainfall > 15 or aqi > 300: severity = "MEDIUM"
 
         payout_receipt = payment_service.trigger_automated_payout(
             rider_id=rider_id,
@@ -112,9 +104,16 @@ async def read_root():
     return {
         "message": "Parashield AI Core is Online",
         "documentation": "/docs",
-        "status": "Ready for Phase 2 Submission"
+        "status": "Ready for Phase 2 Submission",
+        "location_context": "Bhubaneswar Operations"
     }
 
+# --- 5. DYNAMIC STARTUP FOR WASMER ---
 if __name__ == "__main__":
-    logger.info("🚀 Booting up Parashield AI Core...")
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+    # Wasmer provides a 'PORT' environment variable. If it's not there, use 8000 for local.
+    port = int(os.environ.get("PORT", 8080))
+    # On Wasmer, we must listen on 0.0.0.0
+    host = "0.0.0.0" if os.environ.get("PORT") else "127.0.0.1"
+    
+    logger.info(f"🚀 Booting up Parashield AI Core on {host}:{port}...")
+    uvicorn.run("main:app", host=host, port=port, reload=False if os.environ.get("PORT") else True)

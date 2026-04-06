@@ -1,18 +1,21 @@
 [package]
-name = "AkhtarZunaid24/parashield"
+name = "akhtarzunaid24/parashield"
 version = "0.1.0"
 description = "FastAPI backend for Parashield"
 
+[dependencies]
+"python/python" = "3.12"
+
 [[commands]]
 name = "run"
-module = "python"
-runner = "python"
-# Point this to your actual main file
-args = ["BACKEND/main.py"]
-
-[dependencies]
-"python" = "3.11"
+module = "python/python:python"
+runner = "wasi"
+# We add BACKEND to the PYTHONPATH so it can find your routers/services
+args = ["-c", "import sys; sys.path.append('BACKEND'); import uvicorn; uvicorn.run('main:app', host='0.0.0.0', port=8080)"]
 
 [build]
-# This is the line that fixes your 'ModuleNotFoundError'
 setup_command = "pip install -r requirements.txt"
+
+[[deploy]]
+name = "parashield"
+public = true
