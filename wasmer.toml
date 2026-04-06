@@ -5,3 +5,5 @@ description = "FastAPI backend for Parashield"
 
 [dependencies]
 "python/python" = "^3.12"
+
+setup_command = "pip install -r BACKEND/requirements.txt"
