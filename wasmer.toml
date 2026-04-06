@@ -1,13 +1,6 @@
 [package]
 name = "akhtarzunaid24/parashield"
-version = "0.1.4"
-description = "FastAPI backend for Parashield"
-
-[dependencies]
-"python/python" = "^3.12"
-[package]
-name = "akhtarzunaid24/parashield"
-version = "0.1.6"
+version = "0.1.7"
 description = "FastAPI backend for Parashield"
 
 [dependencies]
