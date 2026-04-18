@@ -22,3 +22,25 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Firebase Private Keys (CRITICAL)
+serviceAccountKey.json
+*.local.json
+
+# Environment Variables
+.env
+.env.local
+.env.*.local
+
+# Python Virtual Environments
+myenv/
+venv/
+ENV/
+env/
+
+# Python Bytecode and Cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.python-version

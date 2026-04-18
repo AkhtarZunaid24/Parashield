@@ -1,19 +1,24 @@
 [package]
 name = "akhtarzunaid24/parashield"
-version = "0.1.7"
-description = "FastAPI backend for Parashield"
+version = "0.1.8"
+description = "FastAPI backend for RiderGuard-ai"
 
 [dependencies]
 "python/python" = "3.12"
 
 [build]
+# Install dependencies from the requirements file inside the BACKEND folder
 setup_command = "pip install -r requirements.txt"
 
 [[commands]]
 name = "run"
 module = "python/python:python"
 runner = "wasi"
-args = ["-c", "import sys; sys.path.append('BACKEND'); import uvicorn; uvicorn.run('main:app', host='0.0.0.0', port=8080)"]
+# This command appends BACKEND to the path so your imports (api, models, services) work
+args = [
+    "-c", 
+    "import sys; sys.path.append('BACKEND'); import uvicorn; uvicorn.run('main:app', host='0.0.0.0', port=8080)"
+]
 
 [[deploy]]
 name = "parashield"

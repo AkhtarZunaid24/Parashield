@@ -21,11 +21,11 @@ RiderGuard-ai/
 │   │   └── saved_models/
 │   │       ├── dynamic_fraud_model.pkl
 │   │       └── dynamic_premium_pipeline.pkl
-│   ├── services/
+│   |
 │   └── requirement.txt
 |   └── services/                  
-│       ├── weather_api.py  <- Not complete>       
-│       └── mock_payment.py <- not complete>
+│       ├── weather_api.py      
+│       └── mock_payment.py 
 └── FRONTEND/
     ├── .vscode/
     │   └── settings.json

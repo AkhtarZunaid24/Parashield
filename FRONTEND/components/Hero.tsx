@@ -57,7 +57,7 @@ const Hero: React.FC = () => {
 
       const data = await response.json();
       // data.daily_premium comes from your backend logic
-      setPremium(data.daily_premium);
+      setPremium(data.weekly_premium);
     } catch (error) {
       console.error("Failed to fetch premium:", error);
     } finally {
